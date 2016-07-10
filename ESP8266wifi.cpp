@@ -65,14 +65,17 @@ const char EOL[] PROGMEM = "\n";
 const char STAIP[] PROGMEM = "STAIP,\"";
 const char STAMAC[] PROGMEM = "STAMAC,\"";
 
-ESP8266wifi::ESP8266wifi(Stream &serialIn, Stream &serialOut, byte resetPin) {
+ESP8266wifi::ESP8266wifi(Stream &serialIn, Stream &serialOut, byte resetPin=-1) {
     _serialIn = &serialIn;
     _serialOut = &serialOut;
     _resetPin = resetPin;
-    
-    pinMode(_resetPin, OUTPUT);
-    digitalWrite(_resetPin, LOW);//Start with radio off
-    
+
+    if (_resetPin != -1)
+    {
+      pinMode(_resetPin, OUTPUT);
+      digitalWrite(_resetPin, LOW);//Start with radio off
+    }
+
     flags.connectToServerUsingTCP = true;
     flags.endSendWithNewline = true;
     flags.started = false;
@@ -80,7 +83,7 @@ ESP8266wifi::ESP8266wifi(Stream &serialIn, Stream &serialOut, byte resetPin) {
     flags.localApConfigured = false;
     flags.apConfigured = false;
     flags.serverConfigured = false;
-    
+
     flags.debug = false;
     flags.echoOnOff = false;
 
@@ -90,14 +93,17 @@ ESP8266wifi::ESP8266wifi(Stream &serialIn, Stream &serialOut, byte resetPin) {
     }
 }
 
-ESP8266wifi::ESP8266wifi(Stream &serialIn, Stream &serialOut, byte resetPin, Stream &dbgSerial) {
+ESP8266wifi::ESP8266wifi(Stream &serialIn, Stream &serialOut, Stream &dbgSerial, byte resetPin=-1) {
     _serialIn = &serialIn;
     _serialOut = &serialOut;
     _resetPin = resetPin;
-    
-    pinMode(_resetPin, OUTPUT);
-    digitalWrite(_resetPin, LOW);//Start with radio off
-    
+
+
+    if (_resetPin != -1){
+      pinMode(_resetPin, OUTPUT);
+      digitalWrite(_resetPin, LOW);//Start with radio off
+    }
+
     flags.connectToServerUsingTCP = true;
     flags.endSendWithNewline = true;
     flags.started = false;
@@ -130,6 +136,7 @@ bool ESP8266wifi::begin() {
     serverRetries = 0;
     
     //Do a HW reset
+    if (_resetPin != -1) {
     bool statusOk = false;
     byte i;
     for(i =0; i<HW_RESET_RETRIES; i++){
@@ -144,6 +151,7 @@ bool ESP8266wifi::begin() {
     }
     if (!statusOk)
         return false;
+    }
     
     //Turn local AP = off
     writeCommand(CWMODE_1, EOL);

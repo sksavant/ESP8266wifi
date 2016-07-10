@@ -70,7 +70,7 @@ public:
     /*
      * Will pull resetPin low then high to reset esp8266, connect this pin to CHPD pin
      */
-    ESP8266wifi(Stream &serialIn, Stream &serialOut, byte resetPin, Stream &dbgSerial);
+    ESP8266wifi(Stream &serialIn, Stream &serialOut, Stream &dbgSerial, byte resetPin);
     
     /*
      * Will do hw reset and set inital configuration, will try this HW_RESET_RETRIES times.
